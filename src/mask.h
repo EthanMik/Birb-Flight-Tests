@@ -2,4 +2,4 @@
 
 #include <raylib.h>
 
-void BuildCollisionMap(Image mask, int alphaThreshold);
+void BuildCollisionMap(Image mask, int alphaThreshold, int resolution);

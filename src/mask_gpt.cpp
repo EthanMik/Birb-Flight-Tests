@@ -251,3 +251,75 @@ static void FreePolySet(PolySet *ps) {
 }
 
 #endif // MASK_POLYS_H
+
+// main.c
+#define RAYGUI_IMPLEMENTATION
+#include "raylib.h"
+#include "mask_polys.h"   // from above
+
+int main(void) {
+    InitWindow(1280, 720, "raylib image->polygon collisions");
+    SetTargetFPS(60);
+
+    // Load your mask (same size as background)
+    Image mask = LoadImage("level_mask.png"); // transparent outside, opaque on solids
+    if (mask.data == NULL) { TraceLog(LOG_ERROR, "Failed to load mask"); return 1; }
+
+    // Pixels->world scale: 1.0f means 1 pixel == 1 world unit
+    float pixelsToWorld = 1.0f;
+    PolySet level = BuildPolygonsFromAlpha(mask, 16 /*alpha threshold*/,
+                                           pixelsToWorld, 2.0f /*simplify epsilon in pixels*/);
+    UnloadImage(mask);
+
+    // Optional: background art (for rendering)
+    Texture bg = LoadTexture("level_art.png");
+
+    Vector2 player = { 200, 200 };
+    float   radius = 14.0f;
+
+    while (!WindowShouldClose()) {
+        // --- update ---
+        float spd = 140.0f * GetFrameTime();
+        if (IsKeyDown(KEY_LEFT))  player.x -= spd;
+        if (IsKeyDown(KEY_RIGHT)) player.x += spd;
+        if (IsKeyDown(KEY_UP))    player.y -= spd;
+        if (IsKeyDown(KEY_DOWN))  player.y += spd;
+
+        // --- detect collisions (circle vs polygons) ---
+        bool hit = false;
+        int hitIndex = -1;
+        for (int i=0;i<level.count;i++) {
+            if (poly_vs_circle(level.items[i].v, level.items[i].count, player, radius)) {
+                hit = true; hitIndex = i; break;
+            }
+        }
+
+        // --- draw ---
+        BeginDrawing();
+        ClearBackground((Color){20,20,24,255});
+        if (bg.id) DrawTexture(bg, 0, 0, WHITE);
+
+        // draw polygons
+        for (int i=0;i<level.count;i++) {
+            Color c = (i==hitIndex)? RED : (Color){80, 255, 120, 180};
+            Poly P = level.items[i];
+            for (int j=0;j<P.count;j++) {
+                Vector2 a = P.v[j];
+                Vector2 b = P.v[(j+1)%P.count];
+                DrawLineEx(a, b, 2.0f, c);
+            }
+        }
+
+        // player
+        DrawCircleV(player, radius, (hit? ORANGE: SKYBLUE));
+        DrawCircleLines((int)player.x, (int)player.y, radius, BLACK);
+
+        DrawText("Arrows to move. Collision turns the circle orange.", 18, 18, 18, RAYWHITE);
+        EndDrawing();
+    }
+
+    if (bg.id) UnloadTexture(bg);
+    FreePolySet(&level);
+    CloseWindow();
+    return 0;
+}
