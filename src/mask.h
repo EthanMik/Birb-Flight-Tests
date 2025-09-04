@@ -2,4 +2,6 @@
 
 #include <raylib.h>
 
-void BuildCollisionMap(Image mask, int alphaThreshold, int resolution);
+unsigned char* BuildSolid(const Image* mask, int alphaThreshold);
+void DrawCollisionMap(unsigned char* solid, int w, int h);
+bool CheckCollisionMap(unsigned char* solid, int w, int h, Vector2 center, float radius);

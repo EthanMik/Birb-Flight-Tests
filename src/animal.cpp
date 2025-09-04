@@ -7,8 +7,7 @@ Animal::Animal()
     , y(400)
     , speedX(8)
     , speedY(8)
-    , width(80)
-    , height(80)
+    , radius(15)
 {
 }
 
@@ -27,13 +26,12 @@ void Animal::Update()
     const int screenWidth = GetScreenWidth();
     const int screenHeight = GetScreenHeight();
     
-
-    if ((x + width >= screenWidth) || (x <= 0)) {
+    if ((x + radius >= screenWidth) || (x - radius <= 0)) {
         speedY = RandomizeMovement(speedY);
         speedX *= -1;
     }
     
-    if ((y + height >= screenHeight) || (y <= 0)) {
+    if ((y + radius >= screenHeight) || (y - radius <= 0)) {
         speedX = RandomizeMovement(speedX);
         speedY *= -1;
     }
@@ -41,5 +39,5 @@ void Animal::Update()
 
 void Animal::Draw() const
 {
-    DrawRectangle(x, y, width, height, WHITE);
+    DrawCircle(x, y, radius, WHITE);
 }
