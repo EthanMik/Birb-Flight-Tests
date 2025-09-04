@@ -10,7 +10,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
     
-    Image img = LoadImage("map(2).png");
+    Image img = LoadImage("Map(3).png");
     unsigned char* solid = BuildSolid(&img, 1);
 
     while (!WindowShouldClose())

@@ -1,9 +1,8 @@
 #include "globals.h"
-#include <iostream>
-using namespace std;
+
 Animal::Animal() 
     : x(100)
-    , y(400)
+    , y(100)
     , speedX(0)
     , speedY(0)
     , velocity(10)
@@ -26,9 +25,8 @@ void Animal::Update(unsigned char* solid, int w, int h)
     
     if (CheckCollisionMap(solid, w, h, {x, y}, radius, &seg)) {
         float a = Reflect(&seg, angle);
-        // x += 2 * round(cos(to_rad(180 - angle)));
-        // y += 2 * round(sin(to_rad(180 - angle)));
-        UpdateVelocity(a);
+        a += Random::get(-10, 10);
+        UpdateVelocity(normalize_deg(a));
         angle = a;
     }
 

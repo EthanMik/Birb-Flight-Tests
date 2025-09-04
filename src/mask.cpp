@@ -32,7 +32,7 @@ unsigned char* BuildSolid(const Image* mask, int alphaThreshold) {
     for (int y = 0; y < h; y++) 
         for (int x = 0; x < w; x++) {
         Color c = px[y * w + x];
-        solid[y * w + x] = (c.a > alphaThreshold) ? 1 : 0;
+        solid[y * w + x] = (c.a > alphaThreshold) ? 0 : 1;
     }
     UnloadImageColors(px);    
 
