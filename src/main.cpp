@@ -1,6 +1,4 @@
-#include <raylib.h>
-#include "animal.h"
-#include "mask.h"
+#include "globals.h"
 
 int main() 
 {    
@@ -12,21 +10,22 @@ int main()
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
     
-    Image img = LoadImage("map(1).png");
+    Image img = LoadImage("map(2).png");
     unsigned char* solid = BuildSolid(&img, 1);
 
     while (!WindowShouldClose())
     {
-        a.Update();
+        a.Update(solid, img.width, img.height);
         
         BeginDrawing();
             ClearBackground(BLACK);
             DrawCollisionMap(solid, img.width, img.height);
-            if (CheckCollisionMap(solid, img.width, img.height, {(float)(a.x), (float)(a.y)}, a.radius)) {
-                if (a.speedX > 0 && a.speedY > 0) {
-                    a.speedY = -a.speedY;
-                }
-            }
+            
+            // if (CheckCollisionMap(solid, img.width, img.height, {(float)(a.x), (float)(a.y)}, a.radius)) {
+            //     if (a.speedX > 0 && a.speedY > 0) {
+            //         a.speedY = -a.speedY;
+            //     }
+            // }
             // DrawTexture(bg, 0, 0, {255, 255, 255, 255});
             // DrawRectanglePro(rec, {150, 150}, 45, RED);
             a.Draw();

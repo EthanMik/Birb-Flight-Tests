@@ -1,11 +1,24 @@
-#include "raylib.h"
-#include <stdlib.h>
+#include "globals.h"
 
-typedef struct {int x, y; } I2;  
-typedef struct { Vector2 a, b; } segment;
+#include <iostream>
+using namespace std;
 
-static void drawLine(Vector2 a, Vector2 b) {
+static void drawLine(Vector2 a, Vector2 b) { 
     DrawLine(a.x, a.y, b.x, b.y, RED);
+}
+
+float Reflect(segment* seg, float angle) {
+    cout << "Start A:" << angle << endl;
+    cout << "<" << seg->a.x << " " << seg->a.y << ">" << "<" << seg->b.x << " " << seg->b.y << ">" << endl;
+
+    float tangent = atan2(seg->b.y - seg->a.y, seg->b.x - seg->a.x);
+    float tau = 2 * PI;
+    float out = fmod((2 * tangent - to_rad(angle)), tau);
+
+    if (out < 0.0f) { out += tau; }
+    cout << to_deg(out) << endl;
+    
+    return to_deg(out);
 }
 
 unsigned char* BuildSolid(const Image* mask, int alphaThreshold) {
@@ -64,7 +77,18 @@ void DrawCollisionMap(unsigned char* solid, int w, int h) {
     }
 }
 
-bool CheckCollisionMap(unsigned char* solid, int w, int h, Vector2 center, float radius) {
+static bool Collision(Vector2 center, float radius, Vector2 a, Vector2 b, segment* seg) {
+    if (CheckCollisionCircleLine(center, radius, a, b)) {
+        if (seg) {
+            seg->a = a;
+            seg->b = b;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool CheckCollisionMap(unsigned char* solid, int w, int h, Vector2 center, float radius, segment* seg) {
     if (!solid) { return false; }
 
     for (int y = 0; y < h - 1; y++) {
@@ -82,22 +106,22 @@ bool CheckCollisionMap(unsigned char* solid, int w, int h, Vector2 center, float
             
             switch (idx) {
                 case 0: case 15: break;
-                case 1:  if (CheckCollisionCircleLine(center, radius, a, d)) return true; break;
-                case 2:  if (CheckCollisionCircleLine(center, radius, c, d)) return true; break;
-                case 3:  if (CheckCollisionCircleLine(center, radius, a, c)) return true; break;
-                case 4:  if (CheckCollisionCircleLine(center, radius, b, c)) return true; break;
-                case 5:  if (CheckCollisionCircleLine(center, radius, a, b) ||
-                             CheckCollisionCircleLine(center, radius, c, d)) return true; break;
-                case 6:  if (CheckCollisionCircleLine(center, radius, b, d)) return true; break;
-                case 7:  if (CheckCollisionCircleLine(center, radius, a, b)) return true; break;
-                case 8:  if (CheckCollisionCircleLine(center, radius, a, b)) return true; break;
-                case 9:  if (CheckCollisionCircleLine(center, radius, b, d)) return true; break;
-                case 10: if (CheckCollisionCircleLine(center, radius, a, d) ||
-                             CheckCollisionCircleLine(center, radius, b, c)) return true; break;
-                case 11: if (CheckCollisionCircleLine(center, radius, b, c)) return true; break;
-                case 12: if (CheckCollisionCircleLine(center, radius, a, c)) return true; break;
-                case 13: if (CheckCollisionCircleLine(center, radius, c, d)) return true; break;
-                case 14: if (CheckCollisionCircleLine(center, radius, a, d)) return true; break;
+                case 1:  if (Collision(center, radius, a, d, seg)) return true; break;
+                case 2:  if (Collision(center, radius, c, d, seg)) return true; break;
+                case 3:  if (Collision(center, radius, a, c, seg)) return true; break;
+                case 4:  if (Collision(center, radius, b, c, seg)) return true; break;
+                case 5:  if (Collision(center, radius, a, b, seg) ||
+                             Collision(center, radius, c, d, seg)) return true; break;
+                case 6:  if (Collision(center, radius, b, d, seg)) return true; break;
+                case 7:  if (Collision(center, radius, a, b, seg)) return true; break;
+                case 8:  if (Collision(center, radius, a, b, seg)) return true; break;
+                case 9:  if (Collision(center, radius, b, d, seg)) return true; break;
+                case 10: if (Collision(center, radius, a, d, seg) ||
+                             Collision(center, radius, b, c, seg)) return true; break;
+                case 11: if (Collision(center, radius, b, c, seg)) return true; break;
+                case 12: if (Collision(center, radius, a, c, seg)) return true; break;
+                case 13: if (Collision(center, radius, c, d, seg)) return true; break;
+                case 14: if (Collision(center, radius, a, d, seg)) return true; break;
             }
         }
     }
