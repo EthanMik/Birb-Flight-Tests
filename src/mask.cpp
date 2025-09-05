@@ -41,6 +41,9 @@ unsigned char* BuildSolid(const Image* mask, int alphaThreshold) {
 
 void DrawCollisionMap(unsigned char* solid, int w, int h) {
     if (!solid) { return; }
+    int rez = 20;
+    w /= rez;
+    h /= rez;
 
     for (int y = 0; y < h - 1; y++) {
         for (int x = 0; x < w - 1; x++) {
