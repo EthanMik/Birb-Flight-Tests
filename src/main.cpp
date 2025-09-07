@@ -2,33 +2,46 @@
 
 int main() 
 {    
-    constexpr int screenWidth = 1440;
-    constexpr int screenHeight = 810;
-    
-    Animal a;
+    // constexpr int screenWidth = 1440;
+    // constexpr int screenHeight = 810;
+    constexpr int screenWidth = 960;
+    constexpr int screenHeight = 540;
+
+    std::vector<Animal> animals = {
+        Animal{45, RED},
+        Animal{50, BLUE},
+        Animal{55, YELLOW},
+        Animal{60, ORANGE},
+        Animal{65, GREEN},
+        Animal{70, PURPLE},
+        Animal{80, PINK},
+        Animal{95, BROWN},
+        Animal{100, GRAY}
+    };
     
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
     
-    Image img = LoadImage("Map(3).png");
+    Image img = LoadImage("Map_1.png");
     unsigned char* solid = BuildSolid(&img, 1);
 
     while (!WindowShouldClose())
     {
-        a.Update(solid, img.width, img.height);
+        for (auto& animal : animals) {
+            animal.Update(solid, img.width, img.height);
+        }
+        for (size_t i = 0; i < animals.size(); ++i) {
+            for (size_t j = 0; j < animals.size(); ++j) {
+                ResolveAnimalCollisions(animals[i], animals[j]);
+            }
+        }
         
         BeginDrawing();
             ClearBackground(BLACK);
             DrawCollisionMap(solid, img.width, img.height);
-            
-            // if (CheckCollisionMap(solid, img.width, img.height, {(float)(a.x), (float)(a.y)}, a.radius)) {
-            //     if (a.speedX > 0 && a.speedY > 0) {
-            //         a.speedY = -a.speedY;
-            //     }
-            // }
-            // DrawTexture(bg, 0, 0, {255, 255, 255, 255});
-            // DrawRectanglePro(rec, {150, 150}, 45, RED);
-            a.Draw();
+            for (auto& animal : animals) {
+               animal.Draw();
+            }
         EndDrawing();
     }
     

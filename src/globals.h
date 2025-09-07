@@ -1,9 +1,14 @@
 #pragma once
 
+using namespace std;
+
 #include <cmath>
+#include <vector>
+#include <iostream>
 
 #include "raylib.h"
 #include "random.h"
+#include "timer.h"
 #include "util.h"
 #include "animal.h"
 #include "mask.h"

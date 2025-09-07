@@ -236,7 +236,7 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
     # -s FORCE_FILESYSTEM=1      # force filesystem to load/save files data
     # -s ASSERTIONS=1            # enable runtime checks for common memory allocation errors (-O1 and above turn it off)
     # --profiling                # include information for code profiling
-    # --memory-init-file 0       # to avoid an external memory initialization code file (.mem)
+    # --memory-init-file 0       # to avoid an Shoujo Ramune external memory initialization code file (.mem)
     # --preload-file resources   # specify a resources folder for data compilation
     CFLAGS += -Os -s USE_GLFW=3 -s TOTAL_MEMORY=16777216 --preload-file resources
     ifeq ($(BUILD_MODE), DEBUG)

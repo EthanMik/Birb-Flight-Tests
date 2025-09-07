@@ -1,58 +1,71 @@
 #include "globals.h"
 
-Animal::Animal() 
+Animal::Animal(int angle, Color color) 
     : x(100)
     , y(100)
     , speedX(0)
     , speedY(0)
-    , velocity(10)
-    , angle(45)
-    , radius(15)
+    , velocity(2)
+    , randomness(5)
+    , angle(angle)
+    , radius(10)
+    , color(color)
 {
     UpdateVelocity(angle);
 }
 
-static Vector2 ClosestPointOnSeg(Vector2 p, Vector2 a, Vector2 b) {
-    Vector2 ab = subtract(b, a);
-    float t = 0.0f, ab2 = dot(ab, ab);
-    if (ab2 > 0.0f) {
-        t = dot(subtract(p, a), ab) / ab2;
-        if (t < 0) { t = 0;} 
-        else if (t > 1) { t = 1; } 
-    }
-    return add(a, scale(ab, t));
+Vector2 Animal::GetVelocity() {
+    return Vector2{speedX, speedY};
+}
+
+void Animal::SetVelocity(Vector2 velocity) {
+    speedX = velocity.x;
+    speedY = velocity.y;
+}
+
+Vector2 Animal::GetPosition() {
+    return Vector2{x, y};
 }
 
 void Animal::UpdateVelocity(float theta) {
     speedX = velocity * cos(to_rad(theta));
-    speedY = velocity * sin(to_rad(theta));
+    speedY = -velocity * sin(to_rad(theta));
+    angle = theta;
 }
 
 void Animal::Update(unsigned char* solid, int w, int h) 
 {
-    x += speedX;
-    y += speedY;
+    Vector2 v = {speedX, speedY};
+    int steps = 7;
+    Vector2 dv = { v.x / steps, v.y / steps };
 
-    if (CheckCollisionMap(solid, w, h, {x, y}, radius, &seg)) {
-        float a = Reflect(&seg, angle);
-        a += Random::get(-10, 10);
-        UpdateVelocity(normalize_deg(a));
-        angle = a;
+    for (int i = 0; i < steps; ++i) {
+        x += dv.x;
+        y += dv.y;
 
-        Vector2 p = {x, y};
-        Vector2 q = ClosestPointOnSeg(p, seg.a, seg.b);
-        Vector2 n = normalize(subtract(p, q));
-        float push = radius - dist(p, q);
-        if (push > 0) {
-            p = add(p, scale(n, push + 1));
-            x = p.x; y = p.y;
+        if (CheckCollisionMap(solid, w, h, {x, y}, radius, &seg)) {
+            Vector2 p = {x, y};
+            Vector2 q = closest_point_seg(p, seg.a, seg.b);
+            Vector2 n = normalize(subtract(p, q));
+            float push = radius - dist(p, q);
+            if (push > 0) { 
+                p = add(p, scale(n, push + 0.05f)); 
+                x = p.x; 
+                y = p.y;
+            }
+            dv = reflect(dv, n);
+            v = reflect(v, n);
+
+            speedX = v.x;
+            speedY = v.y;
         }
-
-
+    }
+    if (x < 0 || x > x + w || y < 0 || y < y + h) {
+        // Reset position
     }
 }
 
 void Animal::Draw() const
 {
-    DrawCircle(x, y, radius, WHITE);
+    DrawCircle(x, y, radius, color);
 }

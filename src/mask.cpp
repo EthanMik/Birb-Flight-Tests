@@ -7,32 +7,60 @@ static void drawLine(Vector2 a, Vector2 b) {
     DrawLine(a.x, a.y, b.x, b.y, RED);
 }
 
-float Reflect(segment* seg, float angle) {
-    cout << "Start A:" << angle << endl;
-    cout << "<" << seg->a.x << " " << seg->a.y << ">" << "<" << seg->b.x << " " << seg->b.y << ">" << endl;
-
-    float tangent = atan2(seg->b.y - seg->a.y, seg->b.x - seg->a.x);
-    float tau = 2 * PI;
-    float out = fmod((2 * tangent - to_rad(angle)), tau);
-
-    if (out < 0.0f) { out += tau; }
-    cout << to_deg(out) << endl;
+void ResolveAnimalCollisions(Animal& a, Animal& b) {
+    if (!CheckAnimalCollision(a, b)) return; 
     
-    return to_deg(out);
+    Vector2 velA = a.GetVelocity();
+    Vector2 velB = b.GetVelocity();
+    Vector2 posA = a.GetPosition();
+    Vector2 posB = b.GetPosition();
+    
+    Vector2 line = subtract(posB, posA);
+    Vector2 normal = normalize(line);
+
+    float approach = dot(subtract(velB, velA), normal);
+    if (approach >= 0.0f) return;  
+
+    a.SetVelocity(reflect(velA, normal));
+    b.SetVelocity(reflect(velB, normal));
+
+    // Vector2 pDiff = subtract(posB, posA);
+    // // Vector2 vDiff = subtract(velB, velA);
+    // float d = dist(posA, posB);
+    // if (d <= 1e-12f) return;
+
+    // Vector2 newVelA = add(velA, scale(pDiff, dot(pDiff, vDiff) / (d * d)));
+    // a.SetVelocity(newVelA);
+    
+    // pDiff = subtract(posA, posB);
+    // vDiff = subtract(velA, velB);
+    // Vector2 newVelB = add(velB, scale(pDiff, dot(pDiff, vDiff) / (d * d)));
+    // b.SetVelocity(newVelB);
 }
+
+bool CheckAnimalCollision(Animal& a, Animal& b) {
+    return CheckCollisionCircles(a.GetPosition(), a.radius, b.GetPosition(), b.radius);
+} 
 
 unsigned char* BuildSolid(const Image* mask, int alphaThreshold) {
     int w = mask->width;
     int h = mask->height;
+    int rez = 7;
+    int w_ = w / rez;
+    int h_ = h / rez;
 
     Color* px = LoadImageColors(*mask);
     if (!px) { return nullptr; }
 
-    unsigned char* solid = (unsigned char*)malloc(w * h);
-    for (int y = 0; y < h; y++) 
-        for (int x = 0; x < w; x++) {
-        Color c = px[y * w + x];
-        solid[y * w + x] = (c.a > alphaThreshold) ? 0 : 1;
+    unsigned char* solid = (unsigned char*)malloc(w_ * h_);
+    for (int y_ = 0; y_ < h_; y_++) {
+        for (int x_ = 0; x_ < w_; x_++) {
+            int x = x_ * rez;
+            int y = y_ * rez;
+            Color c = px[y * w + x];
+            solid[y_ * w_ + x_] = (c.r > alphaThreshold) ? 0 : 1;
+            // solid[y_ * w_ + x_] = (c.a > alphaThreshold) ? 0 : 1;
+        }
     }
     UnloadImageColors(px);    
 
@@ -41,21 +69,23 @@ unsigned char* BuildSolid(const Image* mask, int alphaThreshold) {
 
 void DrawCollisionMap(unsigned char* solid, int w, int h) {
     if (!solid) { return; }
-    int rez = 20;
-    w /= rez;
-    h /= rez;
+    int rez = 7;
+    int w_ = w / rez;
+    int h_ = h / rez;
 
-    for (int y = 0; y < h - 1; y++) {
-        for (int x = 0; x < w - 1; x++) {
-            Vector2 a = { x, y + 0.5f };
-            Vector2 b = { x + 0.5f, y };
-            Vector2 c = { x + 1.0f, y + 0.5f };
-            Vector2 d = { x + 0.5f, y + 1.0f };
+    for (int y_ = 0; y_ < h_ - 1; y_++) {
+        for (int x_ = 0; x_ < w_ - 1; x_++) {
+            int x = x_ * rez;
+            int y = y_ * rez;
+            Vector2 a = { x, y + rez * 0.5f };
+            Vector2 b = { x + rez * 0.5f, y };
+            Vector2 c = { x + rez, y + rez * 0.5f };
+            Vector2 d = { x + rez * 0.5f, y + rez };
 
-            int c1 = solid[y * w + x];
-            int c2 = solid[y * w + (x + 1)];
-            int c3 = solid[(y + 1) * w + (x + 1)];
-            int c4 = solid[(y + 1) * w + x];
+            int c1 = solid[y_ * w_ + x_];
+            int c2 = solid[y_ * w_ + (x_ + 1)];
+            int c3 = solid[(y_ + 1) * w_ + (x_ + 1)];
+            int c4 = solid[(y_ + 1) * w_ + x_];
             int idx = c1 * 8 + c2 * 4 + c3 * 2 + c4 * 1;
 
             switch (idx) {
@@ -94,33 +124,37 @@ static bool Collision(Vector2 center, float radius, Vector2 a, Vector2 b, segmen
 bool CheckCollisionMap(unsigned char* solid, int w, int h, Vector2 center, float radius, segment* seg) {
     if (!solid) { return false; }
 
-    for (int y = 0; y < h - 1; y++) {
-        for (int x = 0; x < w - 1; x++) {
-            Vector2 a = { x, y + 0.5f };
-            Vector2 b = { x + 0.5f, y };
-            Vector2 c = { x + 1.0f, y + 0.5f };
-            Vector2 d = { x + 0.5f, y + 1.0f };
+    int rez = 7;
+    int w_ = w / rez;
+    int h_ = h / rez;
+    
+    for (int y_ = 0; y_ < h_ - 1; y_++) {
+        for (int x_ = 0; x_ < w_ - 1; x_++) {
+            int x = x_ * rez;
+            int y = y_ * rez;
+            Vector2 a = { x, y + rez * 0.5f };
+            Vector2 b = { x + rez * 0.5f, y };
+            Vector2 c = { x + rez, y + rez * 0.5f };
+            Vector2 d = { x + rez * 0.5f, y + rez };
 
-            int c1 = solid[y * w + x];
-            int c2 = solid[y * w + (x + 1)];
-            int c3 = solid[(y + 1) * w + (x + 1)];
-            int c4 = solid[(y + 1) * w + x];
+            int c1 = solid[y_ * w_ + x_];
+            int c2 = solid[y_ * w_ + (x_ + 1)];
+            int c3 = solid[(y_ + 1) * w_ + (x_ + 1)];
+            int c4 = solid[(y_ + 1) * w_ + x_];
             int idx = c1 * 8 + c2 * 4 + c3 * 2 + c4 * 1;
-            
+
             switch (idx) {
                 case 0: case 15: break;
                 case 1:  if (Collision(center, radius, a, d, seg)) return true; break;
                 case 2:  if (Collision(center, radius, c, d, seg)) return true; break;
                 case 3:  if (Collision(center, radius, a, c, seg)) return true; break;
                 case 4:  if (Collision(center, radius, b, c, seg)) return true; break;
-                case 5:  if (Collision(center, radius, a, b, seg) ||
-                             Collision(center, radius, c, d, seg)) return true; break;
+                case 5:  if (Collision(center, radius, a, b, seg) || Collision(center, radius, c, d, seg)) return true; break;
                 case 6:  if (Collision(center, radius, b, d, seg)) return true; break;
                 case 7:  if (Collision(center, radius, a, b, seg)) return true; break;
                 case 8:  if (Collision(center, radius, a, b, seg)) return true; break;
                 case 9:  if (Collision(center, radius, b, d, seg)) return true; break;
-                case 10: if (Collision(center, radius, a, d, seg) ||
-                             Collision(center, radius, b, c, seg)) return true; break;
+                case 10: if (Collision(center, radius, a, d, seg) || Collision(center, radius, b, c, seg)) return true; break;
                 case 11: if (Collision(center, radius, b, c, seg)) return true; break;
                 case 12: if (Collision(center, radius, a, c, seg)) return true; break;
                 case 13: if (Collision(center, radius, c, d, seg)) return true; break;
