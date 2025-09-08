@@ -10,15 +10,15 @@ int main()
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
 
-    Image blackImg = LoadImage("Black.png");
-    Image blueImg = LoadImage("Blue.png");
-    Image brownImg = LoadImage("Brown.png");
-    Image grayImg = LoadImage("Gray.png");
-    Image greenImg = LoadImage("Green.png");
-    Image pinkImg = LoadImage("Pink.png");
-    Image redImg = LoadImage("Red.png");
-    Image whiteImg = LoadImage("White.png");
-    Image yellowImg = LoadImage("Yellow.png");
+    Image blackImg = LoadImage("assets/Birbs/Black.png");
+    Image blueImg = LoadImage("assets/Birbs/Blue.png");
+    Image brownImg = LoadImage("assets/Birbs/Brown.png");
+    Image grayImg = LoadImage("assets/Birbs/Gray.png");
+    Image greenImg = LoadImage("assets/Birbs/Green.png");
+    Image pinkImg = LoadImage("assets/Birbs/Pink.png");
+    Image redImg = LoadImage("assets/Birbs/Red.png");
+    Image whiteImg = LoadImage("assets/Birbs/White.png");
+    Image yellowImg = LoadImage("assets/Birbs/Yellow.png");
 
     int characterRadius = 10;
 
@@ -55,9 +55,13 @@ int main()
     };
     
 
+    Image seedsImg = LoadImage("assets/Seeds.png");
+    ImageResize(&seedsImg, 30, 30);
+    Texture2D seeds = LoadTextureFromImage(seedsImg);
     
-    Image img = LoadImage("Map_1.png");
-    Texture2D texture = LoadTexture("Map_1.png");
+    Image img = LoadImage("assets/Maps/Map_1.png");
+    Texture2D texture = LoadTexture("assets/Maps/Map_1.png");
+
     unsigned char* solid = BuildSolid(&img, 1);
 
     while (!WindowShouldClose())
@@ -74,6 +78,7 @@ int main()
         BeginDrawing();
             // ClearBackground(BLACK);
             DrawTexture(texture, 0, 0, {255, 255, 255, 255});
+            DrawTexture(seeds, 245, 220, {255, 255, 255, 255});
             // DrawCollisionMap(solid, img.width, img.height);
             for (auto& animal : animals) {
                animal.Draw();

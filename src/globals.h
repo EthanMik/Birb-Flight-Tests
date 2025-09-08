@@ -12,3 +12,4 @@ using namespace std;
 #include "util.h"
 #include "animal.h"
 #include "mask.h"
+#include "map.h"
