@@ -23,19 +23,6 @@ void ResolveAnimalCollisions(Animal& a, Animal& b) {
 
     a.SetVelocity(reflect(velA, normal));
     b.SetVelocity(reflect(velB, normal));
-
-    // Vector2 pDiff = subtract(posB, posA);
-    // // Vector2 vDiff = subtract(velB, velA);
-    // float d = dist(posA, posB);
-    // if (d <= 1e-12f) return;
-
-    // Vector2 newVelA = add(velA, scale(pDiff, dot(pDiff, vDiff) / (d * d)));
-    // a.SetVelocity(newVelA);
-    
-    // pDiff = subtract(posA, posB);
-    // vDiff = subtract(velA, velB);
-    // Vector2 newVelB = add(velB, scale(pDiff, dot(pDiff, vDiff) / (d * d)));
-    // b.SetVelocity(newVelB);
 }
 
 bool CheckAnimalCollision(Animal& a, Animal& b) {

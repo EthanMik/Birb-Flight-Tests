@@ -1,6 +1,6 @@
 #include "globals.h"
 
-Animal::Animal(int angle, Color color) 
+Animal::Animal(int angle, Color color, Texture2D* texture) 
     : x(100)
     , y(100)
     , speedX(0)
@@ -10,6 +10,7 @@ Animal::Animal(int angle, Color color)
     , angle(angle)
     , radius(10)
     , color(color)
+    , texture(texture)
 {
     UpdateVelocity(angle);
 }
@@ -67,5 +68,6 @@ void Animal::Update(unsigned char* solid, int w, int h)
 
 void Animal::Draw() const
 {
-    DrawCircle(x, y, radius, color);
+    DrawTexture(*texture, x - radius*2, y - radius*2, {255, 255, 255, 255});
+    // DrawCircle(x, y, radius, color);
 }

@@ -5,7 +5,7 @@
 class Animal
 {
 public:
-    Animal(int angle, Color color);
+    Animal(int angle, Color color, Texture2D* texture);
     void Update(unsigned char* solid, int w, int h);
     void Draw() const;
     
@@ -25,4 +25,5 @@ public:
     int radius;
     Color color;
     Timer timer;
+    Texture2D* texture;
 };
