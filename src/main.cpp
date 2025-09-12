@@ -10,50 +10,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
 
-    Image blackImg = LoadImage("assets/Birbs/Black.png");
-    Image blueImg = LoadImage("assets/Birbs/Blue.png");
-    Image brownImg = LoadImage("assets/Birbs/Brown.png");
-    Image grayImg = LoadImage("assets/Birbs/Gray.png");
-    Image greenImg = LoadImage("assets/Birbs/Green.png");
-    Image pinkImg = LoadImage("assets/Birbs/Pink.png");
-    Image redImg = LoadImage("assets/Birbs/Red.png");
-    Image whiteImg = LoadImage("assets/Birbs/White.png");
-    Image yellowImg = LoadImage("assets/Birbs/Yellow.png");
-
-    int characterRadius = 10;
-
-    ImageResize(&blackImg, 10*4, 10*4);
-    ImageResize(&blueImg, 10*4, 10*4);
-    ImageResize(&brownImg, 10*4, 10*4);
-    ImageResize(&grayImg, 10*4, 10*4);
-    ImageResize(&greenImg, 10*4, 10*4);
-    ImageResize(&pinkImg, 10*4, 10*4);
-    ImageResize(&redImg, 10*4, 10*4);
-    ImageResize(&whiteImg, 10*4, 10*4);
-    ImageResize(&yellowImg, 10*4, 10*4);
-
-    Texture2D black = LoadTextureFromImage(blackImg);
-    Texture2D blue = LoadTextureFromImage(blueImg);
-    Texture2D brown = LoadTextureFromImage(brownImg);
-    Texture2D gray = LoadTextureFromImage(grayImg);
-    Texture2D green = LoadTextureFromImage(greenImg);
-    Texture2D pink = LoadTextureFromImage(pinkImg);
-    Texture2D red = LoadTextureFromImage(redImg);
-    Texture2D white = LoadTextureFromImage(whiteImg);
-    Texture2D yellow = LoadTextureFromImage(yellowImg);
-
-    std::vector<Animal> animals = {
-        Animal{45, RED, &black},
-        Animal{50, BLUE, &blue},
-        Animal{55, YELLOW, &brown},
-        Animal{60, ORANGE, &gray},
-        Animal{65, GREEN, &green},
-        Animal{70, PURPLE, &pink},
-        Animal{80, PINK, &red},
-        Animal{95, BROWN, &white},
-        Animal{100, GRAY, &yellow}
-    };
-    
+    assets::InitAnimalAssets();
 
     Image seedsImg = LoadImage("assets/Seeds.png");
     ImageResize(&seedsImg, 30, 30);
@@ -63,26 +20,30 @@ int main()
     Texture2D texture = LoadTexture("assets/Maps/Map_1.png");
 
     unsigned char* solid = BuildSolid(&img, 1);
-
+    Map map{};
+    map.Generate({0, 0, 640, 480});
+    
     while (!WindowShouldClose())
     {
-        for (auto& animal : animals) {
-            animal.Update(solid, img.width, img.height);
-        }
-        for (size_t i = 0; i < animals.size(); ++i) {
-            for (size_t j = 0; j < animals.size(); ++j) {
-                ResolveAnimalCollisions(animals[i], animals[j]);
-            }
-        }
-        
+        // for (size_t i = 0; i < animals.size(); ++i) {
+            //     for (size_t j = 0; j < animals.size(); ++j) {
+                //         ResolveAnimalCollisions(animals[i], animals[j]);
+                //     }
+                // }
+                
         BeginDrawing();
-            // ClearBackground(BLACK);
-            DrawTexture(texture, 0, 0, {255, 255, 255, 255});
-            DrawTexture(seeds, 245, 220, {255, 255, 255, 255});
-            // DrawCollisionMap(solid, img.width, img.height);
-            for (auto& animal : animals) {
-               animal.Draw();
+            map.Draw();
+                
+            for (auto& animal : Animals()) {
+                animal.Draw();
             }
+            // // ClearBackground(BLACK);
+            // DrawTexture(texture, 0, 0, {255, 255, 255, 255});
+            // DrawTexture(seeds, 245, 220, {255, 255, 255, 255});
+            // // DrawCollisionMap(solid, img.width, img.height);
+            // for (auto& animal : animals) {
+            //    animal.Draw();
+            // }
         EndDrawing();
     }
     

@@ -1,15 +1,35 @@
 #include "globals.h"
 
-Animal::Animal(int angle, Color color, Texture2D* texture) 
-    : x(100)
-    , y(100)
+Animal::Animal()
+    : x(0)
+    , y(0)
     , speedX(0)
     , speedY(0)
-    , velocity(2)
-    , randomness(5)
+    , velocity(0)
+    , angle(0)
+    , radius(assets::kAnimalRadius)
+    , texture(nullptr)
+{}
+
+Animal::Animal(Texture2D* texture)
+    : x(0)
+    , y(0)
+    , speedX(0)
+    , speedY(0)
+    , velocity(0)
+    , angle(0)
+    , radius(assets::kAnimalRadius)
+    , texture(texture)
+{}
+
+Animal::Animal(int x, int y, int velocity, int angle, Texture2D* texture) 
+    : x(x)
+    , y(y)
+    , speedX(0)
+    , speedY(0)
+    , velocity(velocity)
     , angle(angle)
     , radius(10)
-    , color(color)
     , texture(texture)
 {
     UpdateVelocity(angle);
@@ -26,6 +46,11 @@ void Animal::SetVelocity(Vector2 velocity) {
 
 Vector2 Animal::GetPosition() {
     return Vector2{x, y};
+}
+
+void Animal::SetPosition(Vector2 position) {
+    this->x = position.x;
+    this->y = position.y;
 }
 
 void Animal::UpdateVelocity(float theta) {
@@ -68,6 +93,9 @@ void Animal::Update(unsigned char* solid, int w, int h)
 
 void Animal::Draw() const
 {
-    DrawTexture(*texture, x - radius*2, y - radius*2, {255, 255, 255, 255});
-    // DrawCircle(x, y, radius, color);
+    if (texture) {
+        DrawTexture(*texture, x - radius*2, y - radius*2, {255, 255, 255, 255});
+    } else {
+        DrawCircle(x, y, radius, PURPLE);
+    }
 }

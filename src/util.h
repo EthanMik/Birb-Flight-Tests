@@ -39,6 +39,12 @@ inline Vector2 add(Vector2 a, Vector2 b) {
     return Vector2{a.x + b.x, a.y + b.y};
 }
 
+inline Vector2 components(float deg, float magnitude) {
+    float x = magnitude * cos(to_rad(deg));
+    float y = magnitude * sin(to_rad(deg));
+    return Vector2{x, y};    
+}
+
 inline Vector2 normalize(Vector2 a) {
     float m2 = a.x*a.x + a.y*a.y;
     if (m2 <= 1e-8f) return {0.0f, 0.0f};
