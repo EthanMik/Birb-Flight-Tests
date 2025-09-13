@@ -10,7 +10,7 @@ int main()
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
     SetTargetFPS(60);
 
-    assets::InitAnimalAssets();
+    Assets::InitAnimalAssets();
 
     Image seedsImg = LoadImage("assets/Seeds.png");
     ImageResize(&seedsImg, 30, 30);
@@ -21,15 +21,11 @@ int main()
 
     unsigned char* solid = BuildSolid(&img, 1);
     Map map{};
-    map.Generate({0, 0, 640, 480});
+    map.Generate({0, 0, 640, 480}, 0);
     
     while (!WindowShouldClose())
     {
-        // for (size_t i = 0; i < animals.size(); ++i) {
-            //     for (size_t j = 0; j < animals.size(); ++j) {
-                //         ResolveAnimalCollisions(animals[i], animals[j]);
-                //     }
-                // }
+        map.Update();
                 
         BeginDrawing();
             map.Draw();
@@ -37,13 +33,7 @@ int main()
             for (auto& animal : Animals()) {
                 animal.Draw();
             }
-            // // ClearBackground(BLACK);
-            // DrawTexture(texture, 0, 0, {255, 255, 255, 255});
-            // DrawTexture(seeds, 245, 220, {255, 255, 255, 255});
-            // // DrawCollisionMap(solid, img.width, img.height);
-            // for (auto& animal : animals) {
-            //    animal.Draw();
-            // }
+
         EndDrawing();
     }
     

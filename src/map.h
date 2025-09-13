@@ -8,20 +8,22 @@ public:
     Map();
     ~Map();
 
-    void Generate(Rectangle mapRegion);
+    void Generate(Rectangle mapRegion, int mapIndex = -1);
     void Update();
     void Draw();
 
 private:
     void PlaceAnimal(float x, float y, size_t count);
     void BuildWalls(const Image* mask, int resolution);
-    void CheckWallCollisions();
+    bool CheckWallCollisions(Vector2 animalPosition, segment* seg);
     void ResolveAnimalCollisions();
     void ResolveWallCollisions();
 
     void test_DrawWalls();
     
+
+    unsigned char* map;
     Rectangle mapRegion;
     Texture2D mapTexture;
-    unsigned char* map;
+    int mapResolution;
 };

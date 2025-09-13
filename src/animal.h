@@ -9,7 +9,6 @@ public:
     Animal(Texture2D* texture);
     Animal(int x, int y, int velocity, int angle, Texture2D* texture);
     
-    void Update(unsigned char* solid, int w, int h);
     void Draw() const;
     
     void SetPosition(Vector2 position);

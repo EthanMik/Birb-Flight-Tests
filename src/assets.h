@@ -2,7 +2,23 @@
 
 #include "globals.h"
 
-namespace assets
+namespace Assets
+{
+    inline constexpr std::array<const char*, 1> kFoodFiles = {
+        "assets/Seeds.png"
+    };    
+}
+
+// Gate Assets
+namespace Assets
+{
+    inline constexpr std::array<const char*, 1> kGateFiles = {
+        "assets/Gate.jpg"
+    };    
+}
+
+// Map Assets
+namespace Assets
 {
     inline constexpr std::array<const char*, 1> kMapFiles = {
         "assets/Maps/Map_1.png"
@@ -10,7 +26,7 @@ namespace assets
 }
 
 // Animal Assets
-namespace assets {
+namespace Assets {
     inline constexpr int kAnimalRadius = 10;
     inline constexpr int kAnimalScale = 4;
 
@@ -51,7 +67,7 @@ namespace assets {
 
 };
 
-inline std::array<Animal, assets::kAnimalFiles.size()>& Animals() {
-    return assets::g_animals;
+inline std::array<Animal, Assets::kAnimalFiles.size()>& Animals() {
+    return Assets::g_animals;
 }
 
