@@ -53,6 +53,8 @@ void Animal::SetPosition(Vector2 position) {
     this->y = position.y;
 }
 
+float Animal::Radius() { return radius;}
+
 void Animal::UpdateVelocity(float theta) {
     speedX = velocity * cos(to_rad(theta));
     speedY = -velocity * sin(to_rad(theta));

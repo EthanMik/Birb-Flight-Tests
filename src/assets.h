@@ -2,11 +2,34 @@
 
 #include "globals.h"
 
+// Food Assets
 namespace Assets
 {
     inline constexpr std::array<const char*, 1> kFoodFiles = {
         "assets/Seeds.png"
     };    
+
+    inline std::array<Texture2D, kFoodFiles.size()> g_FoodTextures;
+
+    inline constexpr int kFoodWidth = 20;
+    inline constexpr int kFoodHeight = 20;
+
+    inline void InitFoodAssets() {
+        for (size_t i = 0; i < kFoodFiles.size(); ++i) {
+            const char* path = kFoodFiles[i];
+            
+            Image img = LoadImage(path);
+
+            if (img.data == nullptr) {
+                TraceLog(LOG_ERROR, "Failed to load image: %s", path);
+                continue;
+            }
+
+            ImageResize(&img, kFoodWidth, kFoodHeight);
+
+            g_FoodTextures[i] = LoadTextureFromImage(img);
+        }        
+    }
 }
 
 // Gate Assets
@@ -14,7 +37,29 @@ namespace Assets
 {
     inline constexpr std::array<const char*, 1> kGateFiles = {
         "assets/Gate.jpg"
-    };    
+    };
+
+    inline std::array<Texture2D, kGateFiles.size()> g_GateTextures;
+
+    inline constexpr int kGateWidth = 35;
+    inline constexpr int kGateHeight = 130;
+
+    inline void InitGateAssets() {
+        for (size_t i = 0; i < kGateFiles.size(); ++i) {
+            const char* path = kGateFiles[i];
+            
+            Image img = LoadImage(path);
+
+            if (img.data == nullptr) {
+                TraceLog(LOG_ERROR, "Failed to load image: %s", path);
+                continue;
+            }
+
+            ImageResize(&img, kGateWidth, kGateHeight);
+
+            g_GateTextures[i] = LoadTextureFromImage(img);
+        }        
+    }
 }
 
 // Map Assets
@@ -66,6 +111,7 @@ namespace Assets {
     }
 
 };
+
 
 inline std::array<Animal, Assets::kAnimalFiles.size()>& Animals() {
     return Assets::g_animals;

@@ -11,15 +11,9 @@ int main()
     SetTargetFPS(60);
 
     Assets::InitAnimalAssets();
+    Assets::InitFoodAssets();
+    Assets::InitGateAssets();
 
-    Image seedsImg = LoadImage("assets/Seeds.png");
-    ImageResize(&seedsImg, 30, 30);
-    Texture2D seeds = LoadTextureFromImage(seedsImg);
-    
-    Image img = LoadImage("assets/Maps/Map_1.png");
-    Texture2D texture = LoadTexture("assets/Maps/Map_1.png");
-
-    unsigned char* solid = BuildSolid(&img, 1);
     Map map{};
     map.Generate({0, 0, 640, 480}, 0);
     

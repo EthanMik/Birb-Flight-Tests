@@ -16,17 +16,19 @@ public:
     Vector2 GetVelocity();
     Vector2 GetPosition();
 
-public:
+    float Radius();
+
+private:
     void UpdateVelocity(float theta);
-    segment seg;
+
     float x;
     float y;
-    int randomness;
-    float velocity;
+
     float angle;
+    float velocity;
     float speedX;
     float speedY;
+
     int radius;
-    Color color;
     Texture2D* texture;
 };

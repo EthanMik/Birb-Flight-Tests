@@ -5,7 +5,20 @@
 class Gate 
 {
 public:
-    Gate(int x, int y, int w, int h, Texture2D* texture);
+    Gate(float x, float y, Texture2D* texture);
+
     void Draw();
+
     void Open();
+    void Close();
+
+private:
+    float x;
+    float y; 
+    Texture2D* texture;
+
+    // Timer timer;
+    int alpha{255};
+
+    bool opened;
 };

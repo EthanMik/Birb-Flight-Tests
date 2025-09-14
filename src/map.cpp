@@ -6,18 +6,16 @@ Map::~Map() {}
 void Map::Generate(Rectangle mapRegion, int mapIndex) {
     this->mapRegion = mapRegion;
 
-    // Randomize animal positions
+    // Randomize animal/food/gate positions
     std::shuffle(Animals().begin(), Animals().end(), Random::generate());
-    
+    std::shuffle(foods.begin(), foods.end(), Random::generate());
+    std::shuffle(gates.begin(), gates.end(), Random::generate());
+
     // Pull random map from asset paths
     int randomMapIndex = mapIndex < 0 ? Random::get(0, Assets::kMapFiles.size() - 1) : mapIndex;
     Image mapImg = LoadImage(Assets::kMapFiles[randomMapIndex]);
     ImageResize(&mapImg, mapRegion.width, mapRegion.height);
     
-    Image foodImg = LoadImage(Assets::kFoodFiles[0]);
-
-
-
     BuildWalls(&mapImg, 7);
 
 
@@ -27,13 +25,36 @@ void Map::Generate(Rectangle mapRegion, int mapIndex) {
 }
 
 void Map::Draw() {
-
     DrawTexture(mapTexture, mapRegion.x, mapRegion.y, {255, 255, 255, 255});
+    for (auto& gate : gates) gate.Draw();
+    for (auto& food : foods) food.Draw();
 }
 
 void Map::Update() {
     ResolveWallCollisions();
     ResolveAnimalCollisions();
+
+    // if (IsMouseButtonDown(0)) {
+    //     for (auto& gate : gates) {
+    //         gate.Open();
+    //     }
+    // }
+}
+
+void Map::PlaceFood(float x, float y, size_t count) {
+    if (foods.size() <= count) {
+        size_t randomFoodIndex = Random::get(0, Assets::g_FoodTextures.size() - 1);
+        Food food{x, y, &Assets::g_FoodTextures[randomFoodIndex]};
+        foods.push_back(food);
+    }
+}
+
+void Map::PlaceGate(float x, float y, size_t count) {
+    if (gates.size() <= count) {
+        size_t randomGateIndex = Random::get(0, Assets::g_GateTextures.size() - 1);
+        Gate gate{x, y, &Assets::g_GateTextures[randomGateIndex]};
+        gates.push_back(gate);
+    }
 }
 
 void Map::PlaceAnimal(float x, float y, size_t count) {
@@ -65,6 +86,8 @@ void Map::BuildWalls(const Image* mask, int resolution) {
     }
 
     size_t animalCount = 0;
+    size_t foodCount = 0;
+    size_t gateCount = 0;
     for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
         Color c = px[y * w + x];
         // Checking for RED pixel
@@ -75,11 +98,11 @@ void Map::BuildWalls(const Image* mask, int resolution) {
         }
         // Checking for BLUE pixel
         if (c.r == 0 && c.b == 255 && c.g == 0) {
-            // Create Gate (Window)
+            PlaceGate(x, y, gateCount++);
         }
         // Checking for GREEN pixel
         if (c.r == 0 && c.b == 0 && c.g == 255) {
-            // Create Seeds
+            PlaceFood(x, y, foodCount++);
         }
     }
 
@@ -192,7 +215,7 @@ void Map::ResolveAnimalCollisions() {
         Animal& a = Animals()[i];
         Animal& b = Animals()[j];
 
-        if (!CheckCollisionCircles(a.GetPosition(), a.radius, b.GetPosition(), b.radius)) continue; 
+        if (!CheckCollisionCircles(a.GetPosition(), a.Radius(), b.GetPosition(), b.Radius())) continue; 
         
         Vector2 velA = a.GetVelocity();
         Vector2 velB = b.GetVelocity();

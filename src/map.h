@@ -13,6 +13,8 @@ public:
     void Draw();
 
 private:
+    void PlaceFood(float x, float y, size_t count);
+    void PlaceGate(float x, float y, size_t count);
     void PlaceAnimal(float x, float y, size_t count);
     void BuildWalls(const Image* mask, int resolution);
     bool CheckWallCollisions(Vector2 animalPosition, segment* seg);
@@ -20,7 +22,9 @@ private:
     void ResolveWallCollisions();
 
     void test_DrawWalls();
-    
+
+    std::vector<Food> foods;
+    std::vector<Gate> gates;
 
     unsigned char* map;
     Rectangle mapRegion;

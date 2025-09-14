@@ -13,6 +13,7 @@ using namespace std;
 #include "timer.h"
 #include "util.h"
 #include "animal.h"
+#include "gate.h"
+#include "food.h"
 #include "assets.h"
-#include "mask.h"
 #include "map.h"
