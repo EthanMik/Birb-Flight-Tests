@@ -18,8 +18,10 @@ private:
     void PlaceAnimal(float x, float y, size_t count);
     void BuildWalls(const Image* mask, int resolution);
     bool CheckWallCollisions(Vector2 animalPosition, segment* seg);
+
     void ResolveAnimalCollisions();
     void ResolveWallCollisions();
+    bool ResolveFoodCollisions();
 
     void test_DrawWalls();
 

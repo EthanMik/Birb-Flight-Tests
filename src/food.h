@@ -8,6 +8,7 @@ public:
     Food(float x, float y, Texture2D* texture);
 
     void Draw();
+    Rectangle Region();
 
 private:
     float x;

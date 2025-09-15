@@ -6,6 +6,10 @@ Food::Food(float x, float y, Texture2D* texture)
     , texture(texture)
 {}
 
+Rectangle Food::Region() {
+    return {x, y, Assets::kFoodWidth, Assets::kFoodHeight};
+}
+
 void Food::Draw() {
     DrawTexture(*texture, x - Assets::kFoodWidth / 2, y - Assets::kFoodHeight / 2, {255, 255, 255, 255});
 }

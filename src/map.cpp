@@ -31,14 +31,16 @@ void Map::Draw() {
 }
 
 void Map::Update() {
+    if (ResolveFoodCollisions()) return;
     ResolveWallCollisions();
     ResolveAnimalCollisions();
+    for (auto& animal : Animals()) animal.Update();
 
-    // if (IsMouseButtonDown(0)) {
-    //     for (auto& gate : gates) {
-    //         gate.Open();
-    //     }
-    // }
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        for (auto& animals : Animals()) {
+            animals.IncreaseVelocity(1.1);
+        }
+    }
 }
 
 void Map::PlaceFood(float x, float y, size_t count) {
@@ -209,13 +211,24 @@ bool Map::CheckWallCollisions(Vector2 animalPosition, segment* seg) {
     return false;
 }
 
+bool Map::ResolveFoodCollisions() {
+    for (auto& animal : Animals()) {
+        for (auto& food : foods)
+            if (CheckCollisionCircleRec(animal.GetPosition(), animal.GetRadius(), food.Region())) {
+                return true;
+            }
+    }
+    return false;
+}
+
 void Map::ResolveAnimalCollisions() {
     for (size_t i = 0; i < Animals().size(); ++i) for (size_t j = 0; j < Animals().size(); ++j) {
 
         Animal& a = Animals()[i];
         Animal& b = Animals()[j];
 
-        if (!CheckCollisionCircles(a.GetPosition(), a.Radius(), b.GetPosition(), b.Radius())) continue; 
+        if (!CheckCollisionCircles(a.GetPosition(), a.GetRadius(), b.GetPosition(), b.GetRadius())
+            || !a.HasCollision() || !b.HasCollision()) continue; 
         
         Vector2 velA = a.GetVelocity();
         Vector2 velB = b.GetVelocity();

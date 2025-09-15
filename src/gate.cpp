@@ -17,7 +17,7 @@ void Gate::Open() {
     // while (timer.elapsed() < 1) {
     //     alpha -= 1;
     // }
-    // opened = true;
+    opened = true;
 }
 
 void Gate::Close() {
