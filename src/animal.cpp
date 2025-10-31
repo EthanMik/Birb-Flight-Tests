@@ -44,7 +44,7 @@ Vector2 Animal::GetPosition() {
 void Animal::SetPosition(Vector2 position) {
     this->x = position.x;
     this->y = position.y;
-}
+}   
 
 float Animal::GetRadius() { return radius; }
 

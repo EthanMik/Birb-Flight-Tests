@@ -36,12 +36,6 @@ void Map::Update() {
     ResolveWallCollisions();
     ResolveAnimalCollisions();
     for (auto& animal : Animals()) animal.Update();
-
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        for (auto& animals : Animals()) {
-            animals.IncreaseVelocity(1.1);
-        }
-    }
 }
 
 void Map::PlaceFood(float x, float y, size_t count) {
@@ -61,7 +55,7 @@ void Map::PlaceGate(float x, float y, size_t count) {
 }
 
 void Map::PlaceAnimal(float x, float y, size_t count) {
-    const float INITIAL_ANIMAL_VELOCITY = 2;
+    const float INITIAL_ANIMAL_VELOCITY = 1.5;
 
     Animals()[count].SetPosition({x, y});
     Animals()[count].SetVelocity(components(Random::get(0, 360), INITIAL_ANIMAL_VELOCITY));

@@ -15,7 +15,9 @@ Overlay::Overlay() {
         { "assets/Birbs/Brown.png", Rectangle{735, 120, 60, 60}, "Brown" },
         { "assets/Birbs/Pink.png", Rectangle{635, 170, 60, 60}, "Pink" },
         { "assets/Birbs/Green.png", Rectangle{685, 170, 60, 60}, "Green" },
-        { "assets/Birbs/Black.png", Rectangle{735, 170, 60, 60}, "Black" }
+        { "assets/Birbs/Black.png", Rectangle{735, 170, 60, 60}, "Black" },
+
+        { "assets/Overlays/Glow.png", Rectangle{635, 70, 60, 60}, "Glow" }
     }};
 
     for (size_t i = 0; i < btnSpecs.size(); ++i) {
@@ -32,6 +34,20 @@ Overlay::Overlay() {
         btnTextures[name] = {LoadTextureFromImage(img), {bound.x, bound.y}};
         UnloadImage(img);
     }
+
+    animals = {
+        {"Black", &Animals()[0]},
+        {"Blue", &Animals()[1]},
+        {"Brown", &Animals()[2]},
+        {"Gray", &Animals()[3]},
+        {"Green", &Animals()[4]},
+        {"Pink", &Animals()[5]},
+        {"Red", &Animals()[6]},
+        {"White", &Animals()[7]},
+        {"Yellow", &Animals()[8]}
+    };
+
+    Reset(1000);
 }
 
 bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
@@ -39,15 +55,18 @@ bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
     Vector2 mousePos = GetMousePosition();
     bool hover = CheckCollisionPointRec(mousePos, boundingBox);
     bool pressed = hover && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
-    bool clicked = hover && pressed && IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
+    bool clicked = hover && IsMouseButtonReleased(MOUSE_LEFT_BUTTON);
 
     Color tint = WHITE;
     if (hover) tint = (Color){ 200, 200, 200, 255 };
     if (pressed) tint = (Color){ 170, 170, 170, 255 };
 
     DrawTexture(tex, pos.x, pos.y, tint);
-
     return clicked;
+}
+
+void Overlay::Reset(int startingCash) {
+    selectPos = btnTextures["Glow"].second;
 }
 
 void Overlay::Draw() {
@@ -72,21 +91,24 @@ void Overlay::AnimalSelctor() {
     auto green = btnTextures["Green"];
     auto black = btnTextures["Black"];
     
-    if (ImageButton(gray.first, gray.second)) {}
-    if (ImageButton(blue.first, blue.second)) {}
-    if (ImageButton(yellow.first, yellow.second)) {}
-    if (ImageButton(red.first, red.second)) {}
-    if (ImageButton(white.first, white.second)) {}
-    if (ImageButton(brown.first, brown.second)) {}
-    if (ImageButton(pink.first, pink.second)) {}
-    if (ImageButton(green.first, green.second)) {}
-    if (ImageButton(black.first, black.second)) {}
+    if (ImageButton(gray.first, gray.second)) { selectPos = gray.second; selectedAnimal = "Gray"; }
+    if (ImageButton(blue.first, blue.second)) { selectPos = blue.second; selectedAnimal = "Blue"; }
+    if (ImageButton(yellow.first, yellow.second)) { selectPos = yellow.second; selectedAnimal = "Yellow"; }
+    if (ImageButton(red.first, red.second)) { selectPos = red.second; selectedAnimal = "Red"; }
+    if (ImageButton(white.first, white.second)) { selectPos = white.second; selectedAnimal = "White"; }
+    if (ImageButton(brown.first, brown.second)) { selectPos = brown.second; selectedAnimal = "Brown"; }
+    if (ImageButton(pink.first, pink.second)) { selectPos = pink.second; selectedAnimal = "Pink"; }
+    if (ImageButton(green.first, green.second)) { selectPos = green.second; selectedAnimal = "Green"; }
+    if (ImageButton(black.first, black.second)) { selectPos = black.second; selectedAnimal = "Black"; }
+
+    auto glow = btnTextures["Glow"];
+    DrawTexture(glow.first, selectPos.x, selectPos.y, WHITE);
 }
 
 void Overlay::KillAnimalBtn() {
     auto btn = btnTextures["SudokuButton"];
     if (ImageButton(btn.first, btn.second)) {
-
+        animals[selectedAnimal]->NonColliding(5);
     }
 }
 
