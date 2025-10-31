@@ -28,6 +28,7 @@ namespace Assets
             ImageResize(&img, kFoodWidth, kFoodHeight);
 
             g_FoodTextures[i] = LoadTextureFromImage(img);
+            UnloadImage(img);
         }        
     }
 }
@@ -58,6 +59,7 @@ namespace Assets
             ImageResize(&img, kGateWidth, kGateHeight);
 
             g_GateTextures[i] = LoadTextureFromImage(img);
+            UnloadImage(img);
         }        
     }
 }
@@ -107,11 +109,37 @@ namespace Assets {
 
             g_animalTextures[i] = LoadTextureFromImage(img);
             g_animals[i] = Animal{&g_animalTextures[i]};
+            UnloadImage(img);
         }        
     }
 
 };
 
+// Overlay Assets
+namespace Assets {
+    
+    inline constexpr std::array<std::pair<const char*, Rectangle>, 2> kOverlaySpecs {{
+        { "assets/Overlays/SidebarBackground.png", Rectangle{640, 54, 150, 480} },
+        { "assets/Overlays/TeamBackground.png", Rectangle{0, 0, 790, 60} }
+    }};
+
+    inline std::array<std::pair<Texture2D, Vector2>, kOverlaySpecs.size()> g_OverlayTextures{};
+
+    inline void InitOverlayAssets() {
+        for (size_t i = 0; i < kOverlaySpecs.size(); ++i) {
+            const char* path = kOverlaySpecs[i].first;
+            Image img = LoadImage(path);
+
+            if (img.data == nullptr) {
+                TraceLog(LOG_ERROR, "Failed to load image: %s", path);
+                continue;
+            }
+            ImageResize(&img, kOverlaySpecs[i].second.width, kOverlaySpecs[i].second.height);
+            g_OverlayTextures[i] = {LoadTextureFromImage(img), {kOverlaySpecs[i].second.x, kOverlaySpecs[i].second.y}};
+            UnloadImage(img);
+        }
+    }
+}   
 
 inline std::array<Animal, Assets::kAnimalFiles.size()>& Animals() {
     return Assets::g_animals;

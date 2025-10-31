@@ -28,6 +28,7 @@ void Map::Draw() {
     DrawTexture(mapTexture, mapRegion.x, mapRegion.y, {255, 255, 255, 255});
     for (auto& gate : gates) gate.Draw();
     for (auto& food : foods) food.Draw();
+    test_DrawWalls();
 }
 
 void Map::Update() {
@@ -95,16 +96,16 @@ void Map::BuildWalls(const Image* mask, int resolution) {
         // Checking for RED pixel
         if (c.r == 255 && c.b == 0 && c.g == 0) {
             if (animalCount < Animals().size()) {
-                PlaceAnimal(x, y, animalCount++);
+                PlaceAnimal(x + mapRegion.x, y + mapRegion.y, animalCount++);
             }
         }
         // Checking for BLUE pixel
         if (c.r == 0 && c.b == 255 && c.g == 0) {
-            PlaceGate(x, y, gateCount++);
+            PlaceGate(x + mapRegion.x, y + mapRegion.y, gateCount++);
         }
         // Checking for GREEN pixel
         if (c.r == 0 && c.b == 0 && c.g == 255) {
-            PlaceFood(x, y, foodCount++);
+            PlaceFood(x + mapRegion.x, y + mapRegion.y, foodCount++);
         }
     }
 
@@ -169,15 +170,15 @@ bool Map::CheckWallCollisions(Vector2 animalPosition, segment* seg) {
     float radius = Assets::kAnimalRadius;
     
     float lookaheadArea = radius * 4;
-    int minX = max(0, (int)floorf((center.x - lookaheadArea) / rez));
-    int maxX = min(w_- 2,(int)floorf((center.x + lookaheadArea) / rez));
-    int minY = max(0, (int)floorf((center.y - lookaheadArea) / rez));
-    int maxY = min(h_ - 2, (int)floorf((center.y + lookaheadArea) / rez));
+    int minX = max(0, (int)floorf((center.x - mapRegion.x - lookaheadArea) / rez));
+    int maxX = min(w_- 2,(int)floorf((center.x - mapRegion.x + lookaheadArea) / rez));
+    int minY = max(0, (int)floorf((center.y - mapRegion.y - lookaheadArea) / rez));
+    int maxY = min(h_ - 2, (int)floorf((center.y - mapRegion.y + lookaheadArea) / rez));
 
     for (int y_ = minY; y_ <= maxY; y_++) {
         for (int x_ = minX; x_ < maxX; x_++) {
-            int x = x_ * rez;
-            int y = y_ * rez;
+            int x = x_ * rez + mapRegion.x;
+            int y = y_ * rez + mapRegion.y;
             Vector2 a = { x, y + rez * 0.5f };
             Vector2 b = { x + rez * 0.5f, y };
             Vector2 c = { x + rez, y + rez * 0.5f };
@@ -262,8 +263,8 @@ void Map::test_DrawWalls() {
 
     for (int y_ = 0; y_ < h_ - 1; y_++) {
         for (int x_ = 0; x_ < w_ - 1; x_++) {
-            int x = x_ * rez;
-            int y = y_ * rez;
+            int x = x_ * rez + mapRegion.x;
+            int y = y_ * rez + mapRegion.y;
             Vector2 a = { x, y + rez * 0.5f };
             Vector2 b = { x + rez * 0.5f, y };
             Vector2 c = { x + rez, y + rez * 0.5f };

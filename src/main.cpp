@@ -13,9 +13,12 @@ int main()
     Assets::InitAnimalAssets();
     Assets::InitFoodAssets();
     Assets::InitGateAssets();
+    Assets::InitOverlayAssets();
 
     Map map{};
-    map.Generate({0, 0, 640, 480}, 0);
+    Overlay overlay{};
+
+    map.Generate({0, 60, 640, 480}, 0);
     
     while (!WindowShouldClose())
     {
@@ -27,6 +30,8 @@ int main()
             for (auto& animal : Animals()) {
                 animal.Draw();
             }
+
+            overlay.Draw();
 
         EndDrawing();
     }
