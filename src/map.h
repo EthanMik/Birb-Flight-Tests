@@ -27,6 +27,7 @@ private:
 
     std::vector<Food> foods;
     std::vector<Gate> gates;
+    std::vector<Animal*> animals;
 
     unsigned char* map;
     Rectangle mapRegion;

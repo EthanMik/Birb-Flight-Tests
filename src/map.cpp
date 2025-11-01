@@ -1,13 +1,17 @@
 #include "globals.h"
 
-Map::Map() {}
+Map::Map() {
+    for (auto& animal : Animals()) {
+        animals.push_back(&animal);
+    }
+}
 Map::~Map() {}
 
 void Map::Generate(Rectangle mapRegion, int mapIndex) {
     this->mapRegion = mapRegion;
 
     // Randomize animal/food/gate positions
-    std::shuffle(Animals().begin(), Animals().end(), Random::generate());
+    std::shuffle(animals.begin(), animals.end(), Random::generate());
     std::shuffle(foods.begin(), foods.end(), Random::generate());
     std::shuffle(gates.begin(), gates.end(), Random::generate());
 
@@ -17,7 +21,6 @@ void Map::Generate(Rectangle mapRegion, int mapIndex) {
     ImageResize(&mapImg, mapRegion.width, mapRegion.height);
     
     BuildWalls(&mapImg, 7);
-
 
     this->mapTexture = LoadTextureFromImage(mapImg);
 
@@ -35,7 +38,7 @@ void Map::Update() {
     if (ResolveFoodCollisions()) return;
     ResolveWallCollisions();
     ResolveAnimalCollisions();
-    for (auto& animal : Animals()) animal.Update();
+    for (auto& animal : animals) animal->Update();
 }
 
 void Map::PlaceFood(float x, float y, size_t count) {
@@ -57,8 +60,8 @@ void Map::PlaceGate(float x, float y, size_t count) {
 void Map::PlaceAnimal(float x, float y, size_t count) {
     const float INITIAL_ANIMAL_VELOCITY = 1.5;
 
-    Animals()[count].SetPosition({x, y});
-    Animals()[count].SetVelocity(components(Random::get(0, 360), INITIAL_ANIMAL_VELOCITY));
+    animals[count]->SetPosition({x, y});
+    animals[count]->SetVelocity(components(Random::get(0, 360), INITIAL_ANIMAL_VELOCITY));
 }
 
 void Map::BuildWalls(const Image* mask, int resolution) {
@@ -89,7 +92,7 @@ void Map::BuildWalls(const Image* mask, int resolution) {
         Color c = px[y * w + x];
         // Checking for RED pixel
         if (c.r == 255 && c.b == 0 && c.g == 0) {
-            if (animalCount < Animals().size()) {
+            if (animalCount < animals.size()) {
                 PlaceAnimal(x + mapRegion.x, y + mapRegion.y, animalCount++);
             }
         }
@@ -109,30 +112,30 @@ void Map::BuildWalls(const Image* mask, int resolution) {
 }
 
 void Map::ResolveWallCollisions() {
-    for (auto& animal : Animals()) {
+    for (auto& animal : animals) {
         segment seg{};
 
-        Vector2 v = animal.GetVelocity();
+        Vector2 v = animal->GetVelocity();
         int STEP_COUNT = 7;
         Vector2 dv = { v.x / STEP_COUNT, v.y / STEP_COUNT };
     
         for (int i = 0; i < STEP_COUNT; ++i) {
-            Vector2 position{animal.GetPosition().x + dv.x, animal.GetPosition().y + dv.y};
-            animal.SetPosition(position);
+            Vector2 position{animal->GetPosition().x + dv.x, animal->GetPosition().y + dv.y};
+            animal->SetPosition(position);
     
-            if (CheckWallCollisions(animal.GetPosition(), &seg)) {
-                Vector2 p = animal.GetPosition();
+            if (CheckWallCollisions(animal->GetPosition(), &seg)) {
+                Vector2 p = animal->GetPosition();
                 Vector2 q = closest_point_seg(p, seg.a, seg.b);
                 Vector2 n = normalize(subtract(p, q));
                 float push = Assets::kAnimalRadius - dist(p, q);
                 if (push > 0) { 
                     p = add(p, scale(n, push + 0.05f)); 
-                    animal.SetPosition({p.x, p.y});
+                    animal->SetPosition({p.x, p.y});
                 }
                 dv = reflect(dv, n);
                 v = reflect(v, n);
                 
-                animal.SetVelocity({v.x, v.y});
+                animal->SetVelocity({v.x, v.y});
             }
         }
         // if (x < 0 || x > x + w || y < 0 || y < y + h) {
@@ -207,9 +210,9 @@ bool Map::CheckWallCollisions(Vector2 animalPosition, segment* seg) {
 }
 
 bool Map::ResolveFoodCollisions() {
-    for (auto& animal : Animals()) {
+    for (auto& animal : animals) {
         for (auto& food : foods)
-            if (CheckCollisionCircleRec(animal.GetPosition(), animal.GetRadius(), food.Region())) {
+            if (CheckCollisionCircleRec(animal->GetPosition(), animal->GetRadius(), food.Region())) {
                 return true;
             }
     }
@@ -217,10 +220,10 @@ bool Map::ResolveFoodCollisions() {
 }
 
 void Map::ResolveAnimalCollisions() {
-    for (size_t i = 0; i < Animals().size(); ++i) for (size_t j = 0; j < Animals().size(); ++j) {
+    for (size_t i = 0; i < animals.size(); ++i) for (size_t j = 0; j < animals.size(); ++j) {
 
-        Animal& a = Animals()[i];
-        Animal& b = Animals()[j];
+        Animal& a = *animals[i];
+        Animal& b = *animals[j];
 
         if (!CheckCollisionCircles(a.GetPosition(), a.GetRadius(), b.GetPosition(), b.GetRadius())
             || !a.HasCollision() || !b.HasCollision()) continue; 

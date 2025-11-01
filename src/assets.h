@@ -91,6 +91,7 @@ namespace Assets {
 
     inline std::array<Texture2D, kAnimalFiles.size()> g_animalTextures{};
     inline std::array<Animal, kAnimalFiles.size()> g_animals;
+    inline std::unordered_map<std::string, Animal*> g_animalsMap;
 
     inline void InitAnimalAssets() {
         for (size_t i = 0; i < kAnimalFiles.size(); ++i) {
@@ -109,6 +110,7 @@ namespace Assets {
 
             g_animalTextures[i] = LoadTextureFromImage(img);
             g_animals[i] = Animal{&g_animalTextures[i]};
+            g_animalsMap[get_file_name(path)] = &g_animals[i];
             UnloadImage(img);
         }        
     }

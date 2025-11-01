@@ -4,6 +4,31 @@
 
 typedef struct { Vector2 a, b; } segment;
 
+inline std::string get_file_name(const std::string& path) {
+    char start = '.';
+    char end = '/';
+    bool found = false;
+    std::string name = "";
+
+    for (auto it = path.end(); it != path.begin(); --it) {
+        if (*it == start) {
+            found = true;
+            continue;
+        }
+
+        if (*it == end) {
+            std::reverse(name.begin(), name.end());
+            return name;
+        }
+        
+        if (found) {
+            name += *it;
+        }
+
+    }
+
+    return name;
+}
 
 inline float to_deg(float rad) {
     return rad * 180 / PI;

@@ -35,18 +35,6 @@ Overlay::Overlay() {
         UnloadImage(img);
     }
 
-    animals = {
-        {"Black", &Animals()[0]},
-        {"Blue", &Animals()[1]},
-        {"Brown", &Animals()[2]},
-        {"Gray", &Animals()[3]},
-        {"Green", &Animals()[4]},
-        {"Pink", &Animals()[5]},
-        {"Red", &Animals()[6]},
-        {"White", &Animals()[7]},
-        {"Yellow", &Animals()[8]}
-    };
-
     Reset(1000);
 }
 
@@ -67,6 +55,7 @@ bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
 
 void Overlay::Reset(int startingCash) {
     selectPos = btnTextures["Glow"].second;
+    selectedAnimal = "Gray";
 }
 
 void Overlay::Draw() {
@@ -108,7 +97,7 @@ void Overlay::AnimalSelctor() {
 void Overlay::KillAnimalBtn() {
     auto btn = btnTextures["SudokuButton"];
     if (ImageButton(btn.first, btn.second)) {
-        animals[selectedAnimal]->NonColliding(5);
+        Assets::g_animalsMap[selectedAnimal]->NonColliding(5);
     }
 }
 
