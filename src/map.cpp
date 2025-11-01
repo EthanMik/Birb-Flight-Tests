@@ -174,8 +174,8 @@ bool Map::CheckWallCollisions(Vector2 animalPosition, segment* seg) {
 
     for (int y_ = minY; y_ <= maxY; y_++) {
         for (int x_ = minX; x_ < maxX; x_++) {
-            int x = x_ * rez + mapRegion.x;
-            int y = y_ * rez + mapRegion.y;
+            float x = x_ * rez + mapRegion.x;
+            float y = y_ * rez + mapRegion.y;
             Vector2 a = { x, y + rez * 0.5f };
             Vector2 b = { x + rez * 0.5f, y };
             Vector2 c = { x + rez, y + rez * 0.5f };
@@ -260,8 +260,8 @@ void Map::test_DrawWalls() {
 
     for (int y_ = 0; y_ < h_ - 1; y_++) {
         for (int x_ = 0; x_ < w_ - 1; x_++) {
-            int x = x_ * rez + mapRegion.x;
-            int y = y_ * rez + mapRegion.y;
+            float x = x_ * rez + mapRegion.x;
+            float y = y_ * rez + mapRegion.y;
             Vector2 a = { x, y + rez * 0.5f };
             Vector2 b = { x + rez * 0.5f, y };
             Vector2 c = { x + rez, y + rez * 0.5f };

@@ -39,7 +39,7 @@ Overlay::Overlay() {
 }
 
 bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
-    Rectangle boundingBox = { pos.x, pos.y, tex.width, tex.height };
+    Rectangle boundingBox = { pos.x, pos.y, (float)tex.width, (float)tex.height };
     Vector2 mousePos = GetMousePosition();
     bool hover = CheckCollisionPointRec(mousePos, boundingBox);
     bool pressed = hover && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
