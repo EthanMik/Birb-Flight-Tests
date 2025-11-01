@@ -29,6 +29,10 @@ Animal::Animal(int x, int y, Vector2 velocity, int angle, Texture2D* texture)
     UpdateVelocity(angle);
 }
 
+void Animal::InitalVelocity(float magnitude) {
+    this->initalVelocityMag = magnitude;
+}
+
 Vector2 Animal::GetVelocity() {
     return velocity;
 }
@@ -39,6 +43,12 @@ void Animal::SetVelocity(Vector2 velocity) {
 
 Vector2 Animal::GetPosition() {
     return Vector2{x, y};
+}
+
+void Animal::InitialPosition(Vector2 position) {
+    initialPosition = position;
+    this->x = position.x;
+    this->y = position.y;
 }
 
 void Animal::SetPosition(Vector2 position) {
@@ -53,29 +63,82 @@ bool Animal::HasCollision() { return !nonColliding; }
 void Animal::NonColliding(float time) {
     nonColliding = true;
     nonCollidingDuration = time;
-    alpha /= 2;
-    timer.reset();
+    alpha = 120;
+    collisionTimer.reset();
 }
 
-void Animal::IncreaseVelocity(float scale) {
-    Vector2 newVelocity {velocity.x * scale, velocity.y * scale};
-    if (abs(newVelocity.x) > maxSpeed.x 
-        || abs(newVelocity.y) > maxSpeed.y) return;
+void Animal::ResetVelocity() {
+    Vector2 newVelocity {velocity.x / velocityScale, velocity.y / velocityScale};
+    velocity = newVelocity;    
+}
+
+void Animal::ResetTintColors() {
+    red = 255;
+    blue = 255;
+    green = 255;
+}
+
+void Animal::IncreaseVelocity(float scale, float time) {
+    speedDuration = time;
+    velocityScale = scale;
+    speedTimer.reset();
+    if (speedUp) return;
+    speedUp = true;
     
+    Vector2 newVelocity {velocity.x * scale, velocity.y * scale};
     velocity = newVelocity;
 }
 
-
 void Animal::Update() {
-    if (timer.elapsed() >= nonCollidingDuration) {
+    if (collisionTimer.elapsed() >= nonCollidingDuration && nonColliding) {
         alpha = 255;
         nonColliding = false;
     }
+
+    if (speedTimer.elapsed() >= speedDuration && speedUp) {
+        ResetVelocity();
+        speedUp = false;
+    }
+
+    if (killTimer.elapsed() >= killDuration && dead) {
+        this->SetPosition(initialPosition);
+        this->SetVelocity(components(Random::get(0, 360), initalVelocityMag));
+        ResetTintColors();
+        dead = false;
+    }
+
+    if (dead) {
+        float factor = 255 / killDuration / 60;
+        green -= factor;
+        blue -= factor;
+    }
+}
+
+void Animal::Fling(float scale, float time) {
+    Vector2 newVelocity {-velocity.x, -velocity.y};
+    velocity = newVelocity;        
+    IncreaseVelocity(scale, time);
+}
+
+void Animal::Kill(float time) {
+    dead = true;
+    killTimer.reset();
+    killDuration = time;
 }
 
 void Animal::Draw() {
+    const float maxGlowRadius = radius * 1.7;
+    const float minGlowRadius = radius * 1.1;
+    static float glowRadius = maxGlowRadius;
+
     if (texture) {
-        DrawTexture(*texture, x - radius*2, y - radius*2, {255, 255, 255, alpha});
+        if (speedUp) {
+            DrawCircle(x, y, glowRadius, {87, 185, 255, 150});
+            glowRadius *= .95;
+            if (glowRadius < minGlowRadius) glowRadius = maxGlowRadius;
+        }
+        DrawTexture(*texture, x - radius*2, y - radius*2, {red, green, blue, alpha});
+
     } else {
         DrawCircle(x, y, radius, PURPLE);
     }

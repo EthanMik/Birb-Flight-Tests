@@ -60,7 +60,8 @@ void Map::PlaceGate(float x, float y, size_t count) {
 void Map::PlaceAnimal(float x, float y, size_t count) {
     const float INITIAL_ANIMAL_VELOCITY = 1.5;
 
-    animals[count]->SetPosition({x, y});
+    animals[count]->InitialPosition({x, y});
+    animals[count]->InitalVelocity(INITIAL_ANIMAL_VELOCITY);
     animals[count]->SetVelocity(components(Random::get(0, 360), INITIAL_ANIMAL_VELOCITY));
 }
 

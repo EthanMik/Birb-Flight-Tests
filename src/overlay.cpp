@@ -97,26 +97,26 @@ void Overlay::AnimalSelctor() {
 void Overlay::KillAnimalBtn() {
     auto btn = btnTextures["SudokuButton"];
     if (ImageButton(btn.first, btn.second)) {
-        Assets::g_animalsMap[selectedAnimal]->NonColliding(5);
+        Assets::g_animalsMap[selectedAnimal]->NonColliding(10);
     }
 }
 
 void Overlay::FlingAnimalBtn() {
     auto btn = btnTextures["FlingButton"];
     if (ImageButton(btn.first, btn.second)) {
-    
+        Assets::g_animalsMap[selectedAnimal]->Fling(3, .3);
     }
 }
 
 void Overlay::SpeedAnimalBtn() {
     auto btn = btnTextures["SpeedButton"];
     if (ImageButton(btn.first, btn.second)) {
-    
+        Assets::g_animalsMap[selectedAnimal]->IncreaseVelocity(2, 10);
     }
 }
 void Overlay::HideAnimalBtn() {
     auto btn = btnTextures["HideButton"];
     if (ImageButton(btn.first, btn.second)) {
-    
+        Assets::g_animalsMap[selectedAnimal]->Kill(5);
     }    
 }
