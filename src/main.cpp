@@ -7,13 +7,14 @@ int main()
     constexpr int screenWidth = 960;
     constexpr int screenHeight = 540;
 
-    InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
+    InitWindow(screenWidth, screenHeight, "Birb Flight Tests");
     SetTargetFPS(60);
 
     Assets::InitAnimalAssets();
     Assets::InitFoodAssets();
     Assets::InitGateAssets();
     Assets::InitOverlayAssets();
+    Assets::InitFontAssets();
 
     Map map{};
     Overlay overlay{};

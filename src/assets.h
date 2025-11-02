@@ -117,6 +117,16 @@ namespace Assets {
 
 };
 
+namespace Assets {
+    inline namespace Fonts {
+        inline Font pixelifySans24px;
+
+        inline void InitFontAssets() {
+            pixelifySans24px = LoadFontEx("assets/Fonts/PixelifySans.ttf", 48, NULL, 0);
+        }
+    }
+}
+
 // Overlay Assets
 namespace Assets {
     

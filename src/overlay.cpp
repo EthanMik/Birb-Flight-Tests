@@ -39,6 +39,10 @@ Overlay::Overlay() {
 }
 
 bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
+    return ImageButton(tex, {}, pos);
+}
+
+bool Overlay::ImageButton(Texture2D tex, Text text, Vector2 pos) {
     Rectangle boundingBox = { pos.x, pos.y, (float)tex.width, (float)tex.height };
     Vector2 mousePos = GetMousePosition();
     bool hover = CheckCollisionPointRec(mousePos, boundingBox);
@@ -48,8 +52,24 @@ bool Overlay::ImageButton(Texture2D tex, Vector2 pos) {
     Color tint = WHITE;
     if (hover) tint = (Color){ 200, 200, 200, 255 };
     if (pressed) tint = (Color){ 170, 170, 170, 255 };
+    bool updateTint = hover || pressed;
 
     DrawTexture(tex, pos.x, pos.y, tint);
+    
+    if (text.text != "") {
+        float centerX = pos.x + tex.width / 2;
+        float centerY = pos.y + tex.height / 2;
+
+        Vector2 textSize = MeasureTextEx(*text.font, text.text.c_str(), text.size, text.spacing);
+        Vector2 textPos = {
+            centerX - textSize.x / 2.0f - text.centerOffset.x,
+            centerY - textSize.y / 2.0f - text.centerOffset.y
+        };
+        Color textTint = text.tint; 
+        if (updateTint) textTint = tint;
+        DrawTextEx(*text.font, text.text.c_str(), textPos, text.size, text.spacing, textTint);
+    }
+
     return clicked;
 }
 
@@ -62,9 +82,11 @@ void Overlay::Draw() {
     for (const auto& asset : Assets::g_OverlayTextures) {
         DrawTexture(asset.first, asset.second.x, asset.second.y, WHITE);
     }
+    DrawTextEx(Assets::Fonts::pixelifySans24px, "$1000", {680, 14}, 36, 2, WHITE);
+
     KillAnimalBtn();
     FlingAnimalBtn();
-    SpeedAnimalBtn();
+    SpeedAnimalBtn();   
     HideAnimalBtn();
     AnimalSelctor();
 }
@@ -96,27 +118,27 @@ void Overlay::AnimalSelctor() {
 
 void Overlay::KillAnimalBtn() {
     auto btn = btnTextures["SudokuButton"];
-    if (ImageButton(btn.first, btn.second)) {
-        Assets::g_animalsMap[selectedAnimal]->NonColliding(10);
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Kaboom", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        Assets::g_animalsMap[selectedAnimal]->Kill(5);
     }
 }
 
 void Overlay::FlingAnimalBtn() {
     auto btn = btnTextures["FlingButton"];
-    if (ImageButton(btn.first, btn.second)) {
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Fling", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
         Assets::g_animalsMap[selectedAnimal]->Fling(3, .3);
     }
 }
 
 void Overlay::SpeedAnimalBtn() {
     auto btn = btnTextures["SpeedButton"];
-    if (ImageButton(btn.first, btn.second)) {
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Speed", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
         Assets::g_animalsMap[selectedAnimal]->IncreaseVelocity(2, 10);
     }
 }
 void Overlay::HideAnimalBtn() {
     auto btn = btnTextures["HideButton"];
-    if (ImageButton(btn.first, btn.second)) {
-        Assets::g_animalsMap[selectedAnimal]->Kill(5);
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Hide", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        Assets::g_animalsMap[selectedAnimal]->NonColliding(10);
     }    
 }
