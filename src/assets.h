@@ -119,10 +119,16 @@ namespace Assets {
 
 namespace Assets {
     inline namespace Fonts {
+        inline Font pixelifySans12px;
         inline Font pixelifySans24px;
+        inline Font pixelifySans48px;
+        inline Font verdana48px;
 
         inline void InitFontAssets() {
-            pixelifySans24px = LoadFontEx("assets/Fonts/PixelifySans.ttf", 48, NULL, 0);
+            pixelifySans12px = LoadFontEx("assets/Fonts/PixelifySans.ttf", 12, NULL, 0);
+            pixelifySans24px = LoadFontEx("assets/Fonts/PixelifySans.ttf", 24, NULL, 0);
+            pixelifySans48px = LoadFontEx("assets/Fonts/PixelifySans.ttf", 48, NULL, 0);
+            verdana48px = LoadFontEx("assets/Fonts/Verdana.ttf", 48, NULL, 0);
         }
     }
 }

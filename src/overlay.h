@@ -32,6 +32,7 @@ private:
     void SpeedAnimalBtn();
     void HideAnimalBtn();
 
+    int bankroll;
     std::array<std::tuple<const char*, Rectangle, std::string>, 14> btnSpecs;
     std::unordered_map<std::string, std::pair<Texture2D, Vector2>> btnTextures;
 

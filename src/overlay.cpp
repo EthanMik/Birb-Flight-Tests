@@ -2,10 +2,10 @@
 
 Overlay::Overlay() {
     btnSpecs = {{
-        { "assets/Overlays/SudokuButton.png", Rectangle{650, 245, 128, 43}, "SudokuButton" },
-        { "assets/Overlays/FlingButton.png", Rectangle{650, 326, 128, 43}, "FlingButton" },
-        { "assets/Overlays/SpeedButton.png", Rectangle{650, 405, 128, 43}, "SpeedButton" },
-        { "assets/Overlays/HideButton.png", Rectangle{650, 482, 128, 43}, "HideButton" },
+        { "assets/Overlays/SudokuButton.png", Rectangle{650, 240, 128, 43}, "SudokuButton" },
+        { "assets/Overlays/FlingButton.png", Rectangle{650, 315, 128, 43}, "FlingButton" },
+        { "assets/Overlays/SpeedButton.png", Rectangle{650, 395, 128, 43}, "SpeedButton" },
+        { "assets/Overlays/HideButton.png", Rectangle{650, 472, 128, 43}, "HideButton" },
 
         { "assets/Birbs/Gray.png", Rectangle{635, 70, 60, 60}, "Gray" },
         { "assets/Birbs/Blue.png", Rectangle{685, 70, 60, 60}, "Blue" },
@@ -76,13 +76,14 @@ bool Overlay::ImageButton(Texture2D tex, Text text, Vector2 pos) {
 void Overlay::Reset(int startingCash) {
     selectPos = btnTextures["Glow"].second;
     selectedAnimal = "Gray";
+    bankroll = startingCash;
 }
 
 void Overlay::Draw() {
     for (const auto& asset : Assets::g_OverlayTextures) {
         DrawTexture(asset.first, asset.second.x, asset.second.y, WHITE);
     }
-    DrawTextEx(Assets::Fonts::pixelifySans24px, "$1000", {680, 14}, 36, 2, WHITE);
+    DrawTextEx(Assets::Fonts::verdana48px, TextFormat("$%02i", bankroll), {680, 14}, 36, 2, WHITE);
 
     KillAnimalBtn();
     FlingAnimalBtn();
@@ -118,27 +119,57 @@ void Overlay::AnimalSelctor() {
 
 void Overlay::KillAnimalBtn() {
     auto btn = btnTextures["SudokuButton"];
-    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Kaboom", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+
+    int maxPrice = 300;
+    int minPrice = 100;
+    int price = std::max(std::min(bankroll / 2, maxPrice), minPrice);
+    DrawTextEx(Assets::verdana48px, TextFormat("$%02i", price), {684, 285}, 18, 2, WHITE);
+
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans48px, "Kaboom", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        if (bankroll < price) return;
+        bankroll -= price;
         Assets::g_animalsMap[selectedAnimal]->Kill(5);
     }
 }
 
 void Overlay::FlingAnimalBtn() {
     auto btn = btnTextures["FlingButton"];
-    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Fling", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+
+    int maxPrice = 50;
+    int minPrice = 5;
+    int price = std::max(std::min(bankroll / 2, maxPrice), minPrice);
+    DrawTextEx(Assets::verdana48px, TextFormat("$%02i", price), {684, 365}, 18, 2, WHITE);
+
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans48px, "Fling", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        bankroll -= price;
         Assets::g_animalsMap[selectedAnimal]->Fling(3, .3);
     }
 }
 
 void Overlay::SpeedAnimalBtn() {
     auto btn = btnTextures["SpeedButton"];
-    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Speed", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+
+    int maxPrice = 50;
+    int minPrice = 5;
+    int price = std::max(std::min(bankroll / 2, maxPrice), minPrice);
+    DrawTextEx(Assets::verdana48px, TextFormat("$%02i", price), {684, 445}, 18, 2, WHITE);
+
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans48px, "Speed", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        bankroll -= price;
         Assets::g_animalsMap[selectedAnimal]->IncreaseVelocity(2, 10);
     }
 }
+
 void Overlay::HideAnimalBtn() {
     auto btn = btnTextures["HideButton"];
-    if (ImageButton(btn.first, Text{ &Assets::pixelifySans24px, "Hide", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+
+    int maxPrice = 50;
+    int minPrice = 5;
+    int price = std::max(std::min(bankroll / 2, maxPrice), minPrice);
+    DrawTextEx(Assets::verdana48px, TextFormat("$%02i", price), {684, 520}, 18, 2, WHITE);
+
+    if (ImageButton(btn.first, Text{ &Assets::pixelifySans48px, "Hide", {3, -3}, 24, 2, {230, 230, 230, 255}}, btn.second)) {
+        bankroll -= price;
         Assets::g_animalsMap[selectedAnimal]->NonColliding(10);
     }    
 }
