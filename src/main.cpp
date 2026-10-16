@@ -1,41 +1,61 @@
 #include "globals.h"
+#include <cstdlib>
+#include <enet/enet.h>
 
-int main() 
-{    
-    // constexpr int screenWidth = 1440;
-    // constexpr int screenHeight = 810;
-    constexpr int screenWidth = 960;
-    constexpr int screenHeight = 540;
+int main() {
+  // Enet init
+  if (enet_initialize() != 0) {
+    fprintf(stderr, "Enet init failed");
+    return EXIT_FAILURE;
+  }
 
-    InitWindow(screenWidth, screenHeight, "Birb Flight Tests");
-    SetTargetFPS(60);
+  ENetAddress address;
+  ENetHost* server;
+  
+  address.host = ENET_HOST_ANY;
+  address.port = 1234;
+  server = enet_host_create(&address, 32, 2, 0, 0);
 
-    Assets::InitAnimalAssets();
-    Assets::InitFoodAssets();
-    Assets::InitGateAssets();
-    Assets::InitOverlayAssets();
-    Assets::InitFontAssets();
+  if (server == NULL) {
+    fprintf(stderr, "Enet server creation failed");
+    exit(EXIT_FAILURE);
+  }
 
-    Map map{};
-    Overlay overlay{};
+  // constexpr int screenWidth = 1440;
+  // constexpr int screenHeight = 810;
+  constexpr int screenWidth = 960;
+  constexpr int screenHeight = 540;
 
-    map.Generate({0, 60, 640, 480}, 0);
-    
-    while (!WindowShouldClose())
-    {
-        map.Update();
-                
-        BeginDrawing();
-            map.Draw();
-                
-            for (auto& animal : Animals()) {
-                animal.Draw();
-            }
+  InitWindow(screenWidth, screenHeight, "Birb Flight Tests");
+  SetTargetFPS(60);
 
-            overlay.Draw();
+  Assets::InitAnimalAssets();
+  Assets::InitFoodAssets();
+  Assets::InitGateAssets();
+  Assets::InitOverlayAssets();
+  Assets::InitFontAssets();
 
-        EndDrawing();
+  Map map{};
+  Overlay overlay{};
+
+  map.Generate({0, 60, 640, 480}, 0);
+
+  while (!WindowShouldClose()) {
+    map.Update();
+
+    BeginDrawing();
+    map.Draw();
+
+    for (auto &animal : Animals()) {
+      animal.Draw();
     }
-    
-    CloseWindow();
+
+    overlay.Draw();
+
+    EndDrawing();
+  }
+
+  CloseWindow();
+  atexit(enet_deinitialize);
+  enet_host_destroy(server);
 }
